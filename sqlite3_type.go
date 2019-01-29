@@ -38,7 +38,7 @@ func (rc *SQLiteRows) ColumnTypeScanType(i int) reflect.Type {
 	switch C.sqlite3_column_type(rc.s.s, C.int(i)) {
 	case C.SQLITE_INTEGER:
 		switch C.GoString(C.sqlite3_column_decltype(rc.s.s, C.int(i))) {
-		case "timestamp", "datetime", "date":
+		case "timestamp", "datetime", "date", "timestamptz":
 			return reflect.TypeOf(time.Time{})
 		case "boolean":
 			return reflect.TypeOf(false)

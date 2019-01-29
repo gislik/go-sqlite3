@@ -221,9 +221,10 @@ var SQLiteTimestampFormats = []string{
 }
 
 const (
-	columnDate      string = "date"
-	columnDatetime  string = "datetime"
-	columnTimestamp string = "timestamp"
+	columnDate        string = "date"
+	columnDatetime    string = "datetime"
+	columnTimestamp   string = "timestamp"
+	columnTimestamptz string = "timestamptz"
 )
 
 func init() {
@@ -2004,7 +2005,7 @@ func (rc *SQLiteRows) Next(dest []driver.Value) error {
 		case C.SQLITE_INTEGER:
 			val := int64(C.sqlite3_column_int64(rc.s.s, C.int(i)))
 			switch rc.decltype[i] {
-			case columnTimestamp, columnDatetime, columnDate:
+			case columnTimestamp, columnDatetime, columnDate, columnTimestamptz:
 				var t time.Time
 				// Assume a millisecond unix timestamp if it's 13 digits -- too
 				// large to be a reasonable timestamp in seconds.
@@ -2044,7 +2045,7 @@ func (rc *SQLiteRows) Next(dest []driver.Value) error {
 			s := C.GoStringN((*C.char)(unsafe.Pointer(C.sqlite3_column_text(rc.s.s, C.int(i)))), C.int(n))
 
 			switch rc.decltype[i] {
-			case columnTimestamp, columnDatetime, columnDate:
+			case columnTimestamp, columnDatetime, columnDate, columnTimestamptz:
 				var t time.Time
 				s = strings.TrimSuffix(s, "Z")
 				for _, format := range SQLiteTimestampFormats {
